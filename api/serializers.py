@@ -1,8 +1,26 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
+from .models.book import Book
+from .models.copy import Copy
+from .models.trade import Trade
 from .models.mango import Mango
 from .models.user import User
+
+class BookSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Book
+        fields = ('id', 'title', 'author', 'isbn', 'genre', 'pages', 'image', 'published')
+
+class CopySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Copy
+        fields = ('id', 'book', 'owner')
+
+class TradeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Trade
+        fields = ('id', 'copy_from', 'copy_to', 'trade_date', 'updated_at', 'status')
 
 class MangoSerializer(serializers.ModelSerializer):
     class Meta:
