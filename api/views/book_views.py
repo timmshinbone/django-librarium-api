@@ -1,6 +1,7 @@
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import PermissionDenied
+from rest_framework.views import APIView
 from rest_framework import generics, status
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.decorators import user_passes_test
@@ -9,7 +10,7 @@ from ..models.book import Book
 from ..serializers import BookSerializer
 
 # Create your views here.
-class Books(generics.ListCreateAPIView):
+class Books(APIView):
     serializer_class = BookSerializer
     def get(self, request):
         """Index request"""
@@ -20,6 +21,7 @@ class Books(generics.ListCreateAPIView):
         data = BookSerializer(books, many=True).data
         return Response({ 'books': data })
 
+class BookCreate(generics.ListCreateAPIView):
     def post(self, request):
       # ##################
       # ADD CUSTOM REROUTER TO CREATE COPY IF BOOK ALREADY EXISTS
@@ -41,6 +43,7 @@ class BookDetail(generics.RetrieveUpdateDestroyAPIView):
     # permission_classes=(IsAuthenticated,)
     def get(self, request, pk):
         """Show request"""
+        print('this is the request', request)
         # Locate the mango to show
         book = get_object_or_404(Book, pk=pk)
 
@@ -48,7 +51,7 @@ class BookDetail(generics.RetrieveUpdateDestroyAPIView):
         data = BookSerializer(book).data
         return Response({ 'book': data })
 
-    @user_passes_test(lambda u: u.is_superuser)
+    # @user_passes_test(lambda u: u.is_superuser)
     def delete(self, request, pk):
         """Delete request"""
         # Locate book to delete
@@ -56,11 +59,13 @@ class BookDetail(generics.RetrieveUpdateDestroyAPIView):
         # # Check the mango's owner agains the user making this request
         # if not request.user.id == mango.owner.id:
         #     raise PermissionDenied('Unauthorized, you do not own this mango')
-        # Only delete if the user owns the  mango
-        book.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        if(request.user.is_superuser):
+          # Only delete if the user owns the  mango
+          book.delete()
+          return Response(status=status.HTTP_204_NO_CONTENT)
+        else:
+          raise PermissionDenied('Unauthorized, you do not have permission to delete this book')
 
-    @user_passes_test(lambda u: u.is_superuser)
     def partial_update(self, request, pk):
         """Update Request"""
         # Locate Mango
@@ -69,14 +74,16 @@ class BookDetail(generics.RetrieveUpdateDestroyAPIView):
         # Check if user is the same as the request.user.id
         # if not request.user.id == mango.owner.id:
         #     raise PermissionDenied('Unauthorized, you do not own this book')
-
-        # Ensure the owner field is set to the current user's ID
-        # request.data['book']['owner'] = request.user.id
-        # Validate updates with serializer
-        data = BookSerializer(book, data=request.data['book'], partial=True)
-        if data.is_valid():
-            # Save & send a 204 no content
-            data.save()
-            return Response(status=status.HTTP_204_NO_CONTENT)
-        # If the data is not valid, return a response with the errors
-        return Response(data.errors, status=status.HTTP_400_BAD_REQUEST)
+        if(request.user.is_superuser):
+          # Ensure the owner field is set to the current user's ID
+          # request.data['book']['owner'] = request.user.id
+          # Validate updates with serializer
+          data = BookSerializer(book, data=request.data['book'], partial=True)
+          if data.is_valid():
+              # Save & send a 204 no content
+              data.save()
+              return Response(status=status.HTTP_204_NO_CONTENT)
+          # If the data is not valid, return a response with the errors
+          return Response(data.errors, status=status.HTTP_400_BAD_REQUEST)
+        else:
+          raise PermissionDenied('Unauthorized, you do not have permission to update this book')
