@@ -20,7 +20,7 @@ class Book(models.Model):
     return f"The book '{self.title}' was written by {self.author} . It was published {self.published} and is {self.pages} pages in length.({self.genre})"
 
   def as_dict(self):
-    """Returns dictionary version of Mango models"""
+    """Returns dictionary version of Book models"""
     return {
         'id': self.id,
         'title': self.title,

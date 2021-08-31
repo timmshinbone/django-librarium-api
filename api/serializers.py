@@ -18,7 +18,7 @@ class CopySerializer(serializers.ModelSerializer):
         fields = ('id', 'book', 'owner')
 
 class CopyReadSerializer(serializers.ModelSerializer):
-    # book = serializers.SlugRelatedField(read_only=True, slug_field='title')
+    book = BookSerializer()
     # owner = serializers.SlugRelatedField(read_only=True, slug_field='email')
 
     # book = serializers.StringRelatedField(many=True, read_only=True)
@@ -31,7 +31,7 @@ class CopyReadSerializer(serializers.ModelSerializer):
 class TradeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Trade
-        fields = ('id', 'copy_from', 'copy_to', 'trade_date', 'updated_at', 'status')
+        fields = '__all__'
 
 class MangoSerializer(serializers.ModelSerializer):
     class Meta:

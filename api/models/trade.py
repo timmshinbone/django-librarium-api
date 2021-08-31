@@ -1,6 +1,9 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 
+from .user import User
+from .copy import Copy
+
 # Create your models here.
 
 class Trade(models.Model):
@@ -13,8 +16,10 @@ class Trade(models.Model):
   # define fields
   # https://docs.djangoproject.com/en/3.0/ref/models/fields/
   # If you are using related_name or related_query_name on a ForeignKey or ManyToManyField, you must always specify a unique reverse name and query name for the field.
-  copy_from = models.ForeignKey('Copy', on_delete=models.CASCADE, related_name='copy_sender')
-  copy_to = models.ForeignKey('Copy', on_delete=models.CASCADE, related_name='copy_receiver')
+  copy_from = models.ForeignKey(Copy, on_delete=models.CASCADE, related_name='copy_sender')
+  copy_to = models.ForeignKey(Copy, on_delete=models.CASCADE, related_name='copy_receiver')
+  from_user = models.ForeignKey(User, on_delete=models.CASCADE, default=None, related_name='req_sent_from')
+  to_user = models.ForeignKey(User, on_delete=models.CASCADE, default=None, related_name='req_sent_to')
   # auto_now_add sets the timestamp when the object is first created
   trade_date = models.DateTimeField(auto_now_add=True)
   # auto_now automatically updates the time anytime the object is saved
@@ -24,6 +29,13 @@ class Trade(models.Model):
     choices=TradeStatuses.choices,
     default=TradeStatuses.PENDING
   )
+
+  def save(self, *args, **kwargs):
+    if self.from_user is None:
+      self.from_user = self.copy_from.owner
+    if self.to_user is None:
+      self.to_user = self.copy_to.owner
+    super(Trade, self).save(*args, **kwargs)
 
   def __str__(self):
     # This must return a string
@@ -35,6 +47,8 @@ class Trade(models.Model):
         'id': self.id,
         'copy_from': self.copy_from,
         'copy_to': self.copy_to,
+        'from_user': self.from_user,
+        'to_user': self.to_user,
         'trade_date': self.trade_date,
         'updated_at': self.updated_at,
         'status': self.status

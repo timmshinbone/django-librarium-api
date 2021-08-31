@@ -27,13 +27,11 @@ class BookCreate(generics.ListCreateAPIView):
       # ADD CUSTOM REROUTER TO CREATE COPY IF BOOK ALREADY EXISTS
       # ##################
         """Create request"""
-        # Add user to request data object
-        # request.data['book']['owner'] = request.user.id
-        # Serialize/create mango
+        # Serialize/create book
         book = BookSerializer(data=request.data['book'])
         # If the mango data is valid according to our serializer...
         if book.is_valid():
-            # Save the created mango & send a response
+            # Save the created book & send a response
             book.save()
             return Response({ 'book': book.data }, status=status.HTTP_201_CREATED)
         # If the data is not valid, return a response with the errors
