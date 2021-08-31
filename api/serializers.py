@@ -17,6 +17,17 @@ class CopySerializer(serializers.ModelSerializer):
         model = Copy
         fields = ('id', 'book', 'owner')
 
+class CopyReadSerializer(serializers.ModelSerializer):
+    # book = serializers.SlugRelatedField(read_only=True, slug_field='title')
+    # owner = serializers.SlugRelatedField(read_only=True, slug_field='email')
+
+    # book = serializers.StringRelatedField(many=True, read_only=True)
+    # print('THIS IS THE BOOK', book)
+
+    class Meta:
+        model = Copy
+        fields = '__all__'
+
 class TradeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Trade

@@ -56,9 +56,6 @@ class BookDetail(generics.RetrieveUpdateDestroyAPIView):
         """Delete request"""
         # Locate book to delete
         book = get_object_or_404(Book, pk=pk)
-        # # Check the mango's owner agains the user making this request
-        # if not request.user.id == mango.owner.id:
-        #     raise PermissionDenied('Unauthorized, you do not own this mango')
         if(request.user.is_superuser):
           # Only delete if the user owns the  mango
           book.delete()

@@ -1,17 +1,14 @@
 from django.db import models
 from django.contrib.auth import get_user_model
+from .book import Book
 
 # Create your models here.
-
 
 class Copy(models.Model):
   # define fields
   # https://docs.djangoproject.com/en/3.0/ref/models/fields/
-  book = models.ForeignKey('Book', on_delete=models.CASCADE)
-  owner = models.ForeignKey(
-      get_user_model(),
-      on_delete=models.CASCADE
-  )
+  book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name='copies')
+  owner = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
 
   def __str__(self):
     # This must return a string

@@ -13,8 +13,8 @@ class Trade(models.Model):
   # define fields
   # https://docs.djangoproject.com/en/3.0/ref/models/fields/
   # If you are using related_name or related_query_name on a ForeignKey or ManyToManyField, you must always specify a unique reverse name and query name for the field.
-  copy_from = models.ForeignKey('Copy', related_name='copy_from+', on_delete=models.CASCADE)
-  copy_to = models.ForeignKey('Copy', related_name='copy_to_receiver', on_delete=models.CASCADE)
+  copy_from = models.ForeignKey('Copy', on_delete=models.CASCADE, related_name='copy_sender')
+  copy_to = models.ForeignKey('Copy', on_delete=models.CASCADE, related_name='copy_receiver')
   # auto_now_add sets the timestamp when the object is first created
   trade_date = models.DateTimeField(auto_now_add=True)
   # auto_now automatically updates the time anytime the object is saved
