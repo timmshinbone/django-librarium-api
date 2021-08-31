@@ -35,17 +35,20 @@ class Copies(generics.ListCreateAPIView):
         # Add user to request data object
         # request.data['owner'] = request.user.id
         print('this is the request', request.data['book'])
+        # get or create returns a tuple, (object, true if new, false if exists) see below:
+        # (<Book: The book 'The Stand' was written by Stephen King . It was published 1978 and is 1153 pages in length.(Fiction)>, False)
         the_book = Book.objects.filter(isbn=request.data['book']['isbn']).get_or_create(request.data['book'])
-        print('made this in the db', the_book[0].id)
+        print('the_book return tuple', the_book)
         # LOOK at django method for finding if a record already exists, maybe create upon receiving error?
         if(the_book[1]):
           copy = CopySerializer(data={"book": the_book[0].id, "owner": request.user.id})
-          print('this is the new copy to send to db', copy)
+          # print('this is the new copy to send to db', copy)
 
           if copy.is_valid():
               copy.save()
               return Response({'copy': copy.data}, status=status.HTTP_201_CREATED)
           return Response(make_copy.errors, status=status.HTTP_400_BAD_REQUEST)
+        # DO I EVEN NEED THE CODE BELOW??
         else:
           copy = CopySerializer(data={"book": the_book[0].id, "owner": request.user.id})
           print('this is the new book', copy)
@@ -54,20 +57,3 @@ class Copies(generics.ListCreateAPIView):
               copy.save()
               return Response({'copy': copy.data}, status=status.HTTP_201_CREATED)
           return Response(make_copy.errors, status=status.HTTP_400_BAD_REQUEST)
-        #   if book.is_valid():
-        #       book.save()
-
-
-        #   copy = CopySerializer(data={"book": book.id, "owner": request.user.id})
-        #   print('THE NEW COPY', copy)
-
-        # Serialize/create copy
-        # copy = CopySerializer(data=request.data)
-        # print('this is the copy', copy)
-        # If the copy data is valid according to our serializer...
-        # if copy.is_valid():
-            # Save the created copy & send a response
-            # copy.save()
-            # return Response({'copy': copy.data}, status=status.HTTP_201_CREATED)
-        # If the data is not valid, return a response with the errors
-        # return Response(copy.errors, status=status.HTTP_400_BAD_REQUEST)
