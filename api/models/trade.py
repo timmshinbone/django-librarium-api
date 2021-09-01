@@ -16,14 +16,19 @@ class Trade(models.Model):
   # define fields
   # https://docs.djangoproject.com/en/3.0/ref/models/fields/
   # If you are using related_name or related_query_name on a ForeignKey or ManyToManyField, you must always specify a unique reverse name and query name for the field.
+  # copy of book that the trade initiator will send
   copy_from = models.ForeignKey(Copy, on_delete=models.CASCADE, related_name='copy_sender')
+  # copy of book desired by the trade initiator
   copy_to = models.ForeignKey(Copy, on_delete=models.CASCADE, related_name='copy_receiver')
+  # trade initiator, owner of copy_from
   from_user = models.ForeignKey(User, on_delete=models.CASCADE, default=None, related_name='req_sent_from')
+  # receiver, owner of copy_to
   to_user = models.ForeignKey(User, on_delete=models.CASCADE, default=None, related_name='req_sent_to')
-  # auto_now_add sets the timestamp when the object is first created
+  # date trade is initiated
   trade_date = models.DateTimeField(auto_now_add=True)
-  # auto_now automatically updates the time anytime the object is saved
+  # date when trade was accepted or declined
   updated_at = models.DateTimeField(auto_now=True)
+  # status, accepted will switch copy_to.owner and copy_from.owner
   status = models.CharField(
     max_length=255,
     choices=TradeStatuses.choices,

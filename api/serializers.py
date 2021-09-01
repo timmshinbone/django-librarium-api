@@ -7,37 +7,6 @@ from .models.trade import Trade
 from .models.mango import Mango
 from .models.user import User
 
-class BookSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Book
-        fields = ('id', 'title', 'author', 'isbn', 'genre', 'pages', 'image', 'published')
-
-class CopySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Copy
-        fields = ('id', 'book', 'owner')
-
-class CopyReadSerializer(serializers.ModelSerializer):
-    book = BookSerializer()
-    # owner = serializers.SlugRelatedField(read_only=True, slug_field='email')
-
-    # book = serializers.StringRelatedField(many=True, read_only=True)
-    # print('THIS IS THE BOOK', book)
-
-    class Meta:
-        model = Copy
-        fields = '__all__'
-
-class TradeSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Trade
-        fields = '__all__'
-
-class MangoSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Mango
-        fields = ('id', 'name', 'color', 'ripe', 'owner')
-
 class UserSerializer(serializers.ModelSerializer):
     # This model serializer will be used for User creation
     # The login serializer also inherits from this serializer
@@ -74,3 +43,59 @@ class ChangePasswordSerializer(serializers.Serializer):
     model = get_user_model()
     old = serializers.CharField(required=True)
     new = serializers.CharField(required=True)
+
+
+class BookSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Book
+        fields = ('id', 'title', 'author', 'isbn',
+                  'genre', 'pages', 'image', 'published')
+
+
+class CopySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Copy
+        fields = ('id', 'book', 'owner')
+
+
+class CopyReadSerializer(serializers.ModelSerializer):
+    book = BookSerializer()
+    owner = serializers.SlugRelatedField(read_only=True, slug_field='email')
+
+    # book = serializers.StringRelatedField(many=True, read_only=True)
+    # print('THIS IS THE BOOK', book)
+
+    class Meta:
+        model = Copy
+        fields = '__all__'
+
+
+class TradeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Trade
+        fields = '__all__'
+
+class TradeReadSerializer(serializers.ModelSerializer):
+    copy_from = CopyReadSerializer()
+    copy_to = CopyReadSerializer()
+    from_user = serializers.SlugRelatedField(read_only=True, slug_field='email')
+    to_user = serializers.SlugRelatedField(read_only=True, slug_field='email')
+
+    class Meta:
+        model = Trade
+        fields = '__all__'
+
+# class TradeCreateSerializer(serializers.ModelSerializer):
+#     # copy_from = CopySerializer()
+#     # copy_to = CopySerializer()
+#     # from_user = copy_from['owner']
+#     # to_user = copy_from['owner']
+#     class Meta:
+#         model = Trade
+#         fields = '__all__'
+
+
+class MangoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Mango
+        fields = ('id', 'name', 'color', 'ripe', 'owner')
