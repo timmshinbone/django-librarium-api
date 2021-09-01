@@ -44,7 +44,7 @@ class Trade(models.Model):
 
   def __str__(self):
     # This must return a string
-    return f"{self.copy_to.owner.email} would like to trade '{self.copy_to.book.title}' for '{self.copy_from.book.title}', do you accept, {self.copy_from.owner.email}?. (current status: {self.status})"
+    return f"{self.copy_from.owner.email} would like to trade '{self.copy_from.book.title}' for '{self.copy_to.book.title}', do you accept, {self.copy_to.owner.email}?. (current status: {self.status})"
 
   def as_dict(self):
     """Returns dictionary version of Mango models"""

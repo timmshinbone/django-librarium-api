@@ -69,7 +69,6 @@ class CopyReadSerializer(serializers.ModelSerializer):
         model = Copy
         fields = '__all__'
 
-
 class TradeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Trade
